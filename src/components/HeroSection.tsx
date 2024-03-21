@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Spotlight } from "./ui/Spotlight";
 import { Button } from "./ui/moving-border";
+import { Boxes } from "./ui/background-boxes";
 
 function HeroSection() {
   return (
@@ -28,7 +29,7 @@ function HeroSection() {
           <Link href={"/courses"}>
             {" "}
             <Button
-               borderRadius="1.75rem"
+              borderRadius="1.75rem"
               className="bg-white dark:bg-black text-black dark:text-white border-neutral-200 dark:border-slate-800"
             >
               Explore courses
