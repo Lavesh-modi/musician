@@ -1,3 +1,5 @@
+'use client'
+
 import { WavyBackground } from "@/components/ui/wavy-background";
 
 function Contact() {
