@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
+import useApi from "@/hooks/useApi";
 import {
   IconBrandGithub,
   IconBrandGoogle,
@@ -17,10 +18,11 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { data, loading, error, postData } = useApi("");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
+    console.log("Form submitted", formData)
+   await postData('http://localhost:8085/signup', formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +33,35 @@ const Signup = () => {
       [id]: value,
     }));
   };
+if(loading){
+  return(
+    <h2
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+    }}
+  >
+    Loading.....
+  </h2>
+
+  )
+}
+if (error) {
+  return (
+    <h2
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      ERROR : {error}
+    </h2>
+  );
+}
   return (
     <WavyBackground>
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black mt-28">

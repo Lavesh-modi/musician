@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import useApi from "@/hooks/useApi";
+import { useRouter } from "next/navigation";
+
 import { cn } from "@/utils/cn";
 import {
   IconBrandGithub,
@@ -9,27 +12,51 @@ import {
   IconBrandOnlyfans,
 } from "@tabler/icons-react";
 import { WavyBackground } from "@/components/ui/wavy-background";
+
+interface LoginResponse {
+  // Define the shape of the response you expect from your API
+  message: string;
+  token: string;
+}
 const Login = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
-   
     email: "",
     password: "",
     // confirmPassword: "",
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted", formData);
+  const handleSignupClick = () => {
+    router.push("/signup");
   };
+  const { data, loading, error, postData } = useApi<LoginResponse>("");
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await postData("http://localhost:8085/login", formData);
+  };
+  console.log(data);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    console.log(id,value,"id value")
     setFormData((prevFormData) => ({
       ...prevFormData,
       [id]: value,
     }));
   };
+  if (error) {
+    return (
+      <h2
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        ERROR : {error}
+      </h2>
+    );
+  }
   return (
     <WavyBackground>
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black mt-28 ">
@@ -38,32 +65,10 @@ const Login = () => {
         </h2>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
           Login to musician if you can because we don&apos;t have a login flow
-
         </p>
 
         <form className="my-8" onSubmit={handleSubmit}>
-          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-            {/* <LabelInputContainer>
-              <Label htmlFor="firstName">First name</Label>
-              <Input
-                id="firstName"
-                placeholder="Tyler"
-                type="text"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-            </LabelInputContainer> */}
-            {/* <LabelInputContainer>
-              <Label htmlFor="lastName">Last name</Label>
-              <Input
-                id="lastName"
-                placeholder="Durden"
-                type="text"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-            </LabelInputContainer> */}
-          </div>
+          <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4"></div>
           <LabelInputContainer className="mb-4">
             <Label htmlFor="email">Email Address</Label>
             <Input
@@ -84,22 +89,14 @@ const Login = () => {
               onChange={handleChange}
             />
           </LabelInputContainer>
-          {/* <LabelInputContainer className="mb-8">
-            <Label htmlFor="password">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              placeholder="••••••••"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-          </LabelInputContainer> */}
 
           <button
             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
+            disabled={loading}
           >
-            Login  &rarr;
+            {loading ? "Logging in..." : "Login"}
+            {loading && <span>&rarr;</span>}
             <BottomGradient />
           </button>
 
@@ -129,7 +126,8 @@ const Login = () => {
 
             <button
               className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-              type="submit"
+              type="button"
+              onClick={handleSignupClick}
             >
               <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
               <span className="text-neutral-700 dark:text-neutral-300 text-sm">
